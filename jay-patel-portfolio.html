@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jay Patel — AI/ML Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ━━━━━━ TOKENS ━━━━━━ */
+:root{
+  --bg:#04040c; --s1:#0a0a1e; --s2:#10102a;
+  --p:#7c3aed; --p2:#6d28d9; --c:#06b6d4; --f:#f0abfc;
+  --t:#f0eeff; --m:#6b6a8e; --dim:#2a2a4a;
+  --gp:rgba(124,58,237,0.5); --gc:rgba(6,182,212,0.4);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t);font-family:'Space Grotesk',sans-serif;
+  font-weight:300;overflow-x:hidden;cursor:none}
+
+/* ━━━━━━ NOISE TEXTURE ━━━━━━ */
+body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+  opacity:.5}
+
+/* ━━━━━━ MESH GRADIENT BG ━━━━━━ */
+.mesh{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:var(--bg);overflow:hidden}
+.mesh::before{content:'';position:absolute;inset:-50%;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 20%,rgba(124,58,237,.18) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 80% 70%,rgba(6,182,212,.12) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 90%,rgba(240,171,252,.1) 0%,transparent 60%),
+    radial-gradient(ellipse 70% 70% at 10% 80%,rgba(109,40,217,.14) 0%,transparent 60%);
+  animation:meshFlow 20s ease-in-out infinite alternate;
+  transform-origin:center}
+@keyframes meshFlow{
+  0%{transform:scale(1) rotate(0deg)}
+  33%{transform:scale(1.1) rotate(2deg)}
+  66%{transform:scale(.95) rotate(-1deg)}
+  100%{transform:scale(1.05) rotate(1.5deg)}
+}
+
+/* ━━━━━━ GRID LINES ━━━━━━ */
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(124,58,237,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(124,58,237,.06) 1px,transparent 1px);
+  background-size:100px 100px}
+
+/* ━━━━━━ CUSTOM CURSOR ━━━━━━ */
+.cur-outer{position:fixed;width:36px;height:36px;border:1.5px solid rgba(124,58,237,.6);
+  border-radius:50%;pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);transition:transform .08s ease,opacity .3s;mix-blend-mode:difference}
+.cur-inner{position:fixed;width:5px;height:5px;background:var(--f);border-radius:50%;
+  pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .02s}
+.cur-outer.hovered{transform:translate(-50%,-50%) scale(2);opacity:.4}
+
+/* ━━━━━━ NAV ━━━━━━ */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.4rem 5%;
+  background:rgba(4,4,12,0);
+  transition:background .4s,backdrop-filter .4s}
+nav.scrolled{background:rgba(4,4,12,.85);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(124,58,237,.12)}
+.logo-nav{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.05em;
+  background:linear-gradient(135deg,var(--f),var(--p));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--m);
+  text-decoration:none;letter-spacing:.15em;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--f)}
+.btn-hire{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.1em;
+  padding:.6rem 1.4rem;border-radius:2px;text-decoration:none;
+  border:1px solid var(--p);color:var(--f);background:transparent;
+  transition:all .25s;position:relative;overflow:hidden}
+.btn-hire::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--p2),var(--p));
+  transform:translateX(-100%);transition:transform .3s ease;z-index:-1}
+.btn-hire:hover::before{transform:translateX(0)}
+.btn-hire:hover{color:#fff}
+
+/* ━━━━━━ HERO ━━━━━━ */
+#hero{position:relative;z-index:1;min-height:100vh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:0 5%;overflow:hidden}
+.hero-eyebrow{display:flex;align-items:center;gap:.8rem;
+  font-family:'JetBrains Mono',monospace;font-size:.7rem;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--c);
+  margin-bottom:2rem;opacity:0;animation:slideRight .8s .2s forwards}
+.eyebrow-line{flex:1;max-width:60px;height:1px;background:var(--c)}
+
+.hero-name{font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(5rem,22vw,22rem);
+  line-height:.88;letter-spacing:-.01em;
+  opacity:0;animation:heroReveal .9s .4s forwards}
+.hn1{display:block;
+  -webkit-text-stroke:1px rgba(240,171,252,.3);
+  color:transparent;
+  background:linear-gradient(160deg,#fff 30%,rgba(240,171,252,.6) 100%);
+  -webkit-background-clip:text;background-clip:text}
+.hn2{display:block;
+  background:linear-gradient(135deg,var(--p) 0%,var(--f) 50%,var(--c) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 60px rgba(124,58,237,.5))}
+
+.hero-meta{display:flex;align-items:flex-end;justify-content:space-between;
+  margin-top:2.5rem;flex-wrap:wrap;gap:1.5rem;
+  opacity:0;animation:slideUp .8s .7s forwards}
+.hero-desc{max-width:420px;color:var(--m);line-height:1.8;font-size:.88rem}
+.hero-desc strong{color:var(--t);font-weight:500}
+.hero-actions{display:flex;flex-direction:column;align-items:flex-end;gap:1rem}
+.hero-scroll-hint{font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--m);
+  display:flex;align-items:center;gap:.6rem}
+.scroll-arr{width:30px;height:1px;background:var(--m);position:relative}
+.scroll-arr::after{content:'';position:absolute;right:0;top:-3px;
+  border:4px solid transparent;border-left-color:var(--m)}
+
+/* Status pill */
+.status-pill{display:inline-flex;align-items:center;gap:.5rem;
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--c);
+  background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.25);
+  padding:.4rem 1rem;border-radius:100px;width:fit-content}
+.dot-live{width:6px;height:6px;background:#4ade80;border-radius:50%;
+  box-shadow:0 0 8px #4ade80;animation:blink 1.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ━━━━━━ MARQUEE ━━━━━━ */
+.marquee-wrap{position:relative;z-index:1;overflow:hidden;
+  border-top:1px solid rgba(124,58,237,.15);
+  border-bottom:1px solid rgba(124,58,237,.15);
+  background:rgba(10,10,30,.6);padding:.9rem 0;backdrop-filter:blur(5px)}
+.marquee-track{display:flex;gap:0;animation:marquee 25s linear infinite;width:max-content}
+.marquee-track:hover{animation-play-state:paused}
+.marquee-item{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.12em;
+  color:var(--m);padding:0 2rem;white-space:nowrap;transition:color .2s}
+.marquee-item:hover{color:var(--f)}
+.marquee-sep{color:var(--p);margin:0 .5rem;font-size:.6rem;vertical-align:middle}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ━━━━━━ BENTO SECTION ━━━━━━ */
+#bento{position:relative;z-index:1;padding:7rem 5%;max-width:1300px;margin:0 auto}
+.bento-grid{display:grid;
+  grid-template-columns:repeat(12,1fr);
+  grid-template-rows:auto;
+  gap:1rem}
+
+.bc{background:var(--s1);border:1px solid rgba(124,58,237,.15);
+  border-radius:16px;padding:2rem;transition:all .4s;position:relative;overflow:hidden}
+.bc::after{content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(124,58,237,.08),transparent 60%);
+  opacity:0;transition:opacity .4s}
+.bc:hover{border-color:rgba(124,58,237,.4);transform:translateY(-3px)}
+.bc:hover::after{opacity:1}
+
+.bc-about{grid-column:span 5;grid-row:span 2}
+.bc-isro{grid-column:span 3}
+.bc-gfg{grid-column:span 4}
+.bc-stat1{grid-column:span 2}
+.bc-stat2{grid-column:span 2}
+.bc-stat3{grid-column:span 2}
+.bc-gdg{grid-column:span 3;grid-row:span 2}
+.bc-nvidia{grid-column:span 3}
+.bc-kaggle{grid-column:span 3}
+.bc-google{grid-column:span 4}
+
+.bento-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--p);margin-bottom:.8rem}
+.bento-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;
+  letter-spacing:.03em;line-height:1.1;margin-bottom:.6rem}
+.bento-body{font-size:.82rem;color:var(--m);line-height:1.8}
+.bento-big{font-family:'Bebas Neue',sans-serif;font-size:5rem;line-height:1;
+  background:linear-gradient(135deg,var(--p),var(--f));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bento-icon{font-size:2.2rem;margin-bottom:.8rem}
+.bento-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.58rem;
+  letter-spacing:.08em;text-transform:uppercase;padding:.2rem .6rem;border-radius:3px;
+  background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:#4ade80;
+  margin-top:.5rem}
+
+/* ━━━━━━ PROJECTS ━━━━━━ */
+#projects{position:relative;z-index:1;padding:7rem 5%;max-width:1300px;margin:0 auto}
+.sec-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.65rem;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--c);margin-bottom:.6rem}
+.sec-h{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,6vw,5rem);
+  letter-spacing:.02em;margin-bottom:3rem;line-height:1}
+.proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.proj-card{background:var(--s1);border:1px solid rgba(124,58,237,.12);
+  border-radius:16px;overflow:hidden;
+  transition:all .4s;transform-style:preserve-3d;position:relative}
+.proj-card:hover{border-color:rgba(124,58,237,.5);
+  box-shadow:0 30px 80px rgba(124,58,237,.15),0 0 0 1px rgba(124,58,237,.2)}
+.proj-top{background:linear-gradient(135deg,var(--s2),var(--bg));
+  padding:2.5rem 2rem 1.5rem;position:relative;overflow:hidden}
+.proj-top::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 70% 30%,rgba(124,58,237,.15),transparent 60%)}
+.proj-num{font-family:'Bebas Neue',sans-serif;font-size:4rem;
+  color:rgba(124,58,237,.1);position:absolute;right:1.5rem;top:.5rem;line-height:1}
+.proj-icon-big{font-size:2.5rem;position:relative;z-index:1;
+  filter:drop-shadow(0 0 20px rgba(124,58,237,.5))}
+.proj-body{padding:1.5rem 2rem 2rem}
+.proj-title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1.05rem;margin-bottom:.5rem}
+.proj-desc{font-size:.82rem;color:var(--m);line-height:1.7;margin-bottom:1.2rem}
+.proj-stack{display:flex;flex-wrap:wrap;gap:.35rem}
+.stk{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.04em;
+  padding:.2rem .55rem;border-radius:3px;
+  background:rgba(6,182,212,.07);border:1px solid rgba(6,182,212,.2);color:var(--c)}
+.proj-link{margin-top:1.5rem;display:inline-flex;align-items:center;gap:.4rem;
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.08em;
+  color:var(--p);text-decoration:none;transition:gap .2s}
+.proj-link:hover{gap:.8rem;color:var(--f)}
+
+/* ━━━━━━ EXPERIENCE ━━━━━━ */
+#experience{position:relative;z-index:1;padding:7rem 5%;max-width:1000px;margin:0 auto}
+.xp-list{display:flex;flex-direction:column;gap:1px}
+.xp-item{border:1px solid rgba(124,58,237,.12);border-radius:12px;overflow:hidden;transition:border-color .3s}
+.xp-item:hover{border-color:rgba(124,58,237,.4)}
+.xp-header{display:grid;grid-template-columns:80px 1fr auto;align-items:center;gap:1.5rem;
+  padding:1.5rem 2rem;cursor:pointer;transition:background .3s}
+.xp-header:hover{background:rgba(124,58,237,.04)}
+.xp-year{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--p);letter-spacing:.05em}
+.xp-role{font-weight:500;font-size:.95rem}
+.xp-company{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--m);margin-top:.2rem;letter-spacing:.04em}
+.xp-arrow{color:var(--p);transition:transform .3s;font-size:1.2rem}
+.xp-item.open .xp-arrow{transform:rotate(45deg)}
+.xp-body{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .4s ease}
+.xp-item.open .xp-body{max-height:600px;padding:0 2rem 1.5rem}
+.xp-content{border-top:1px solid rgba(124,58,237,.1);padding-top:1.5rem}
+.xp-ul{list-style:none;display:flex;flex-direction:column;gap:.7rem}
+.xp-ul li{font-size:.84rem;color:var(--m);line-height:1.7;
+  padding-left:1.5rem;position:relative}
+.xp-ul li::before{content:'—';position:absolute;left:0;color:var(--p)}
+.sim-pills{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.sim-p{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.04em;
+  padding:.35rem .9rem;border-radius:4px;
+  background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);color:var(--c)}
+
+/* ━━━━━━ SKILLS ━━━━━━ */
+#skills{position:relative;z-index:1;padding:7rem 5%;max-width:1300px;margin:0 auto}
+.skills-outer{display:grid;grid-template-columns:1fr 2fr;gap:4rem;align-items:start}
+.skill-cats{display:flex;flex-direction:column;gap:.5rem}
+.sk-cat-btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:.8rem 1.4rem;border-radius:6px;
+  background:transparent;border:1px solid rgba(124,58,237,.15);color:var(--m);
+  cursor:pointer;text-align:left;transition:all .25s}
+.sk-cat-btn.active,.sk-cat-btn:hover{background:rgba(124,58,237,.1);border-color:var(--p);color:var(--f)}
+.sk-panel{display:none}
+.sk-panel.active{display:flex;flex-wrap:wrap;gap:.6rem;align-content:flex-start}
+.sk-pill{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.04em;
+  padding:.5rem 1rem;border-radius:6px;
+  background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.15);
+  color:var(--t);cursor:default;transition:all .2s}
+.sk-pill:hover{background:rgba(124,58,237,.15);border-color:var(--p);transform:translateY(-2px)}
+
+/* ━━━━━━ COMMUNITY ━━━━━━ */
+#community{position:relative;z-index:1;padding:7rem 5%;max-width:1300px;margin:0 auto}
+.comm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.comm-c{background:var(--s1);border:1px solid rgba(124,58,237,.12);
+  border-radius:14px;padding:1.8rem 1.5rem;text-align:center;transition:all .35s}
+.comm-c:hover{border-color:rgba(240,171,252,.4);transform:translateY(-4px);
+  box-shadow:0 20px 50px rgba(124,58,237,.1)}
+.ci-icon{font-size:2rem;margin-bottom:.8rem}
+.ci-name{font-weight:600;font-size:.88rem;margin-bottom:.3rem}
+.ci-sub{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--m);letter-spacing:.04em}
+
+/* ━━━━━━ CERTS ━━━━━━ */
+#certs{position:relative;z-index:1;padding:7rem 5%;max-width:1300px;margin:0 auto}
+.certs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.8rem}
+.cert-c{background:var(--s1);border:1px solid rgba(124,58,237,.1);
+  border-radius:10px;padding:1.1rem 1.2rem;
+  display:flex;align-items:flex-start;gap:.9rem;transition:all .25s}
+.cert-c:hover{border-color:rgba(124,58,237,.4);transform:translateY(-2px)}
+.cert-ico{width:36px;height:36px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.ia{background:rgba(240,171,252,.1)} .ig{background:rgba(6,182,212,.1)}
+.il{background:rgba(14,118,168,.12)} .if{background:rgba(74,222,128,.1)}
+.ii{background:rgba(255,107,53,.1)} .in{background:rgba(118,185,0,.1)}
+.cert-name{font-weight:500;font-size:.78rem;line-height:1.4;margin-bottom:.2rem}
+.cert-iss{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--m);
+  text-transform:uppercase;letter-spacing:.06em}
+.cert-dt{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--p);margin-top:.2rem}
+
+/* ━━━━━━ CONTACT ━━━━━━ */
+#contact{position:relative;z-index:1;padding:7rem 5%;
+  display:flex;flex-direction:column;align-items:center;text-align:center}
+.contact-pre{font-family:'JetBrains Mono',monospace;font-size:.68rem;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--m);margin-bottom:1.5rem}
+.contact-h{font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(4rem,12vw,10rem);line-height:.9;letter-spacing:.01em;margin-bottom:2.5rem}
+.contact-h .ch1{display:block;color:var(--t)}
+.contact-h .ch2{display:block;
+  background:linear-gradient(135deg,var(--p),var(--f),var(--c));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.contact-sub{color:var(--m);font-size:.9rem;line-height:1.9;max-width:500px;margin-bottom:3rem}
+.contact-btns{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.cb-link{display:flex;align-items:center;gap:.5rem;
+  font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.08em;
+  padding:.8rem 1.8rem;border-radius:4px;text-decoration:none;transition:all .25s}
+.cb-primary{background:linear-gradient(135deg,var(--p2),var(--p));color:#fff;
+  box-shadow:0 0 30px rgba(124,58,237,.35)}
+.cb-primary:hover{box-shadow:0 0 60px rgba(124,58,237,.6);transform:translateY(-2px)}
+.cb-ghost{border:1px solid rgba(124,58,237,.3);color:var(--m)}
+.cb-ghost:hover{border-color:var(--p);color:var(--f);background:rgba(124,58,237,.06)}
+
+/* ━━━━━━ FOOTER ━━━━━━ */
+footer{position:relative;z-index:1;text-align:center;
+  padding:2rem 5%;border-top:1px solid rgba(124,58,237,.1);
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--m);letter-spacing:.12em}
+
+/* ━━━━━━ SCROLL REVEAL ━━━━━━ */
+.sr{opacity:0;transform:translateY(40px) scale(.98);
+  transition:opacity .7s ease,transform .7s ease}
+.sr.v{opacity:1;transform:translateY(0) scale(1)}
+.sr-l{opacity:0;transform:translateX(-40px);transition:opacity .7s ease,transform .7s ease}
+.sr-l.v{opacity:1;transform:translateX(0)}
+.sr-r{opacity:0;transform:translateX(40px);transition:opacity .7s ease,transform .7s ease}
+.sr-r.v{opacity:1;transform:translateX(0)}
+
+/* ━━━━━━ ANIMS ━━━━━━ */
+@keyframes slideRight{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes heroReveal{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+/* ━━━━━━ RESPONSIVE ━━━━━━ */
+@media(max-width:1000px){
+  .bento-grid{grid-template-columns:repeat(6,1fr)}
+  .bc-about{grid-column:span 6}
+  .bc-isro,.bc-gfg{grid-column:span 3}
+  .bc-stat1,.bc-stat2,.bc-stat3{grid-column:span 2}
+  .bc-gdg,.bc-nvidia,.bc-kaggle{grid-column:span 3}
+  .bc-google{grid-column:span 6}
+  .proj-grid{grid-template-columns:1fr 1fr}
+  .skills-outer{grid-template-columns:1fr}
+  .comm-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+  .nav-links{display:none}
+  .bento-grid{grid-template-columns:1fr 1fr}
+  .bc-about,.bc-isro,.bc-gfg,.bc-gdg,.bc-google{grid-column:span 2}
+  .bc-stat1,.bc-stat2,.bc-stat3,.bc-nvidia,.bc-kaggle{grid-column:span 1}
+  .proj-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="cur-outer" id="curOuter"></div>
+<div class="cur-inner" id="curInner"></div>
+<div class="mesh"></div>
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="logo-nav">JP</div>
+  <ul class="nav-links">
+    <li><a href="#bento">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#certs">Certs</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="mailto:jaypatel29042008@gmail.com" class="btn-hire">Hire Me</a>
+</nav>
+
+<!-- ───────── HERO ───────── -->
+<section id="hero">
+  <div class="hero-eyebrow">
+    <div class="eyebrow-line"></div>
+    Computer Engineering · LDRP-GTU · Gandhinagar, Gujarat · 2026
+    <div class="eyebrow-line"></div>
+  </div>
+
+  <h1 class="hero-name" id="heroName">
+    <span class="hn1">JAY</span>
+    <span class="hn2">PATEL</span>
+  </h1>
+
+  <div class="hero-meta">
+    <div>
+      <div class="status-pill">
+        <span class="dot-live"></span>Open to Internships
+      </div>
+      <p class="hero-desc" style="margin-top:1.2rem">
+        <strong>AI/ML Engineer in training.</strong> Building real intelligent systems — computer vision, NLP, AI agents. Interned at CodeAlpha. ISRO trained. Google Cloud Gen AI Academy participant.
+      </p>
+    </div>
+    <div class="hero-actions">
+      <div class="hero-scroll-hint">Scroll to explore <div class="scroll-arr"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── MARQUEE ───────── -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marqueeTrack">
+    <span class="marquee-item">Python<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">YOLOv8<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Machine Learning<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">NLP<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">OpenCV<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Google Cloud<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">AWS Bedrock<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">AI Agents<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Prompt Engineering<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">scikit-learn<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Data Analytics<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">ISRO<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">GDG Member<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Python<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">YOLOv8<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Machine Learning<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">NLP<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">OpenCV<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Google Cloud<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">AWS Bedrock<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">AI Agents<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Prompt Engineering<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">scikit-learn<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Data Analytics<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">ISRO<span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">GDG Member<span class="marquee-sep">✦</span></span>
+  </div>
+</div>
+
+<!-- ───────── BENTO ───────── -->
+<section id="bento">
+  <div class="bento-grid">
+
+    <div class="bc bc-about sr">
+      <div class="bento-label">// about.me</div>
+      <div class="bento-title">Building AI that actually ships.</div>
+      <p class="bento-body" style="margin-bottom:1rem">I'm a Computer Engineering student at LDRP-GTU, driven by one obsession: turning raw intelligence into working systems. I've built object detection pipelines, NLP chatbots, and language tools during my CodeAlpha AI internship.</p>
+      <p class="bento-body">Selected for ISRO's online training programme and Google Cloud Gen AI Academy. Enrolled in Kaggle's 5-Day AI Agents Intensive with Google. GeeksforGeeks Campus Mantri 2026. Member of 4 GDG chapters globally.</p>
+    </div>
+
+    <div class="bc bc-isro sr">
+      <div class="bento-icon">🛸</div>
+      <div class="bento-title" style="font-size:1.1rem">ISRO Training</div>
+      <p class="bento-body" style="font-size:.75rem">Aerosols: Measurement, Retrieval & Impacts. Indian Space Research Organisation — IIRS Distance Learning.</p>
+      <div class="bento-badge">Active · 2026</div>
+    </div>
+
+    <div class="bc bc-gfg sr">
+      <div class="bento-icon">🟢</div>
+      <div class="bento-title" style="font-size:1.1rem">GFG Campus Mantri</div>
+      <p class="bento-body" style="font-size:.75rem">Registered as Campus Ambassador for GeeksforGeeks — 2026 programme. Leadership & community building role.</p>
+      <div class="bento-badge">Ambassador 2026</div>
+    </div>
+
+    <div class="bc bc-stat1 sr" style="text-align:center">
+      <div class="bento-big" data-target="3">0</div>
+      <div class="bento-label" style="margin:0">AI Projects</div>
+    </div>
+    <div class="bc bc-stat2 sr" style="text-align:center">
+      <div class="bento-big" data-target="20" data-suffix="+">0</div>
+      <div class="bento-label" style="margin:0">Certificates</div>
+    </div>
+    <div class="bc bc-stat3 sr" style="text-align:center">
+      <div class="bento-big" data-target="5">0</div>
+      <div class="bento-label" style="margin:0">Simulations</div>
+    </div>
+
+    <div class="bc bc-gdg sr">
+      <div class="bento-icon">🌐</div>
+      <div class="bento-title" style="font-size:1.1rem">GDG Member</div>
+      <p class="bento-body" style="font-size:.75rem;margin-bottom:.8rem">Active member across 4 Google Developer Groups globally.</p>
+      <div style="display:flex;flex-direction:column;gap:.3rem">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--m)">→ GDG Capital Region</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--m)">→ GDG Cloud Montreal</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--m)">→ GDG London</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--m)">→ GDG on Campus</span>
+      </div>
+    </div>
+
+    <div class="bc bc-nvidia sr">
+      <div class="bento-icon">⚡</div>
+      <div class="bento-title" style="font-size:1rem">NVIDIA Developer</div>
+      <div class="bento-body" style="font-size:.75rem">Community member</div>
+    </div>
+
+    <div class="bc bc-kaggle sr">
+      <div class="bento-icon">📊</div>
+      <div class="bento-title" style="font-size:1rem">Kaggle × Google</div>
+      <div class="bento-body" style="font-size:.75rem">5-Day AI Agents Intensive · Enrolled</div>
+    </div>
+
+    <div class="bc bc-google sr" style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap">
+      <div>
+        <div class="bento-label">Google Cloud</div>
+        <div class="bento-title">Gen AI Academy</div>
+        <p class="bento-body" style="font-size:.8rem">Selective programme. Milestone-based challenges covering Vertex AI, Generative AI, and Google Cloud AI products. Via Hack2Skill platform.</p>
+      </div>
+      <div class="bento-badge" style="white-space:nowrap">Active Participant · 2026</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ───────── PROJECTS ───────── -->
+<section id="projects">
+  <div class="sr">
+    <p class="sec-eyebrow">// selected.work</p>
+    <h2 class="sec-h">Projects</h2>
+  </div>
+  <div class="proj-grid">
+    <div class="proj-card sr" id="pc1">
+      <div class="proj-top">
+        <div class="proj-num">01</div>
+        <div class="proj-icon-big">🔍</div>
+      </div>
+      <div class="proj-body">
+        <div class="proj-title">Object Detection & Tracking</div>
+        <p class="proj-desc">Real-time multi-object detection and tracking using YOLOv8 + OpenCV. Processes live video with high-accuracy bounding boxes and persistent object IDs across frames.</p>
+        <div class="proj-stack">
+          <span class="stk">YOLOv8</span><span class="stk">Ultralytics</span><span class="stk">OpenCV</span><span class="stk">Python</span>
+        </div>
+        <a href="https://github.com/jaypatel29042008-glitch" class="proj-link" target="_blank">View on GitHub →</a>
+      </div>
+    </div>
+    <div class="proj-card sr" id="pc2" style="transition-delay:.1s">
+      <div class="proj-top">
+        <div class="proj-num">02</div>
+        <div class="proj-icon-big">💬</div>
+      </div>
+      <div class="proj-body">
+        <div class="proj-title">NLP FAQ Chatbot</div>
+        <p class="proj-desc">Intelligent chatbot using TF-IDF vectorization and cosine similarity. Trained on custom Q&A datasets for precise domain-specific query matching without deep learning overhead.</p>
+        <div class="proj-stack">
+          <span class="stk">NLP</span><span class="stk">TF-IDF</span><span class="stk">scikit-learn</span><span class="stk">Python</span>
+        </div>
+        <a href="https://github.com/jaypatel29042008-glitch" class="proj-link" target="_blank">View on GitHub →</a>
+      </div>
+    </div>
+    <div class="proj-card sr" id="pc3" style="transition-delay:.2s">
+      <div class="proj-top">
+        <div class="proj-num">03</div>
+        <div class="proj-icon-big">🌐</div>
+      </div>
+      <div class="proj-body">
+        <div class="proj-title">Language Translation Tool</div>
+        <p class="proj-desc">Desktop GUI translator supporting 50+ languages with real-time translation. Clean Tkinter interface powered by Google Translate API with language auto-detection.</p>
+        <div class="proj-stack">
+          <span class="stk">Tkinter</span><span class="stk">googletrans</span><span class="stk">Python</span><span class="stk">GUI</span>
+        </div>
+        <a href="https://github.com/jaypatel29042008-glitch" class="proj-link" target="_blank">View on GitHub →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── EXPERIENCE ───────── -->
+<section id="experience">
+  <div class="sr">
+    <p class="sec-eyebrow">// work.history</p>
+    <h2 class="sec-h">Experience</h2>
+  </div>
+  <div class="xp-list sr">
+
+    <div class="xp-item open">
+      <div class="xp-header" onclick="toggleXP(this)">
+        <div class="xp-year">2026</div>
+        <div><div class="xp-role">AI Intern</div><div class="xp-company">CodeAlpha · Artificial Intelligence</div></div>
+        <div class="xp-arrow">+</div>
+      </div>
+      <div class="xp-body">
+        <div class="xp-content">
+          <ul class="xp-ul">
+            <li>Built Language Translation Tool (Tkinter + googletrans) supporting 50+ languages with auto-detection.</li>
+            <li>Developed NLP FAQ Chatbot with TF-IDF + cosine similarity pipeline — high-precision query matching with no LLM overhead.</li>
+            <li>Engineered real-time Object Detection & Tracking system using YOLOv8 (Ultralytics) + OpenCV.</li>
+            <li>Published all 3 projects on GitHub with documentation; submitted via LinkedIn posts tagging CodeAlpha.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="xp-item" style="margin-top:.5rem">
+      <div class="xp-header" onclick="toggleXP(this)">
+        <div class="xp-year">2026</div>
+        <div><div class="xp-role">Gen AI Academy Participant</div><div class="xp-company">Google Cloud · Hack2Skill</div></div>
+        <div class="xp-arrow">+</div>
+      </div>
+      <div class="xp-body">
+        <div class="xp-content">
+          <ul class="xp-ul">
+            <li>Selected for Google Cloud's Gen AI Academy — a selective, milestone-driven programme.</li>
+            <li>Completing challenges on Vertex AI, Generative AI APIs, and Google Cloud AI products.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="xp-item" style="margin-top:.5rem">
+      <div class="xp-header" onclick="toggleXP(this)">
+        <div class="xp-year">2026</div>
+        <div><div class="xp-role">ISRO Online Training</div><div class="xp-company">IIRS — Indian Space Research Organisation</div></div>
+        <div class="xp-arrow">+</div>
+      </div>
+      <div class="xp-body">
+        <div class="xp-content">
+          <ul class="xp-ul">
+            <li>Accepted into ISRO's "Aerosols: Measurement, Retrieval and Impacts" training programme.</li>
+            <li>Registration No. 202610572969019 — conducted by IIRS Distance Learning Programme.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="xp-item" style="margin-top:.5rem">
+      <div class="xp-header" onclick="toggleXP(this)">
+        <div class="xp-year">2026</div>
+        <div><div class="xp-role">5 Virtual Job Simulations</div><div class="xp-company">The Forage · Industry Experience</div></div>
+        <div class="xp-arrow">+</div>
+      </div>
+      <div class="xp-body">
+        <div class="xp-content">
+          <ul class="xp-ul">
+            <li>Completed simulations applying real-world engineering, data science, and consulting skills.</li>
+          </ul>
+          <div class="sim-pills">
+            <span class="sim-p">JPMorgan Chase</span>
+            <span class="sim-p">Walmart USA</span>
+            <span class="sim-p">Deloitte Australia</span>
+            <span class="sim-p">Tata Group</span>
+            <span class="sim-p">Tata Cybersecurity</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="xp-item" style="margin-top:.5rem">
+      <div class="xp-header" onclick="toggleXP(this)">
+        <div class="xp-year">2026</div>
+        <div><div class="xp-role">Odoo × KSV Hackathon</div><div class="xp-company">Odoo · Virtual Round Participant</div></div>
+        <div class="xp-arrow">+</div>
+      </div>
+      <div class="xp-body">
+        <div class="xp-content">
+          <ul class="xp-ul">
+            <li>Competed in the virtual round of the Odoo × KSV Hackathon 2026 and received official results from the Odoo Hackathon Team.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ───────── SKILLS ───────── -->
+<section id="skills">
+  <div class="sr">
+    <p class="sec-eyebrow">// tech.stack</p>
+    <h2 class="sec-h">Skills</h2>
+  </div>
+  <div class="skills-outer sr">
+    <div class="skill-cats">
+      <button class="sk-cat-btn active" onclick="switchSkill(this,'sk-ai')">🤖 AI / ML</button>
+      <button class="sk-cat-btn" onclick="switchSkill(this,'sk-cv')">👁 Vision & NLP</button>
+      <button class="sk-cat-btn" onclick="switchSkill(this,'sk-cloud')">☁️ Cloud</button>
+      <button class="sk-cat-btn" onclick="switchSkill(this,'sk-data')">📊 Data</button>
+      <button class="sk-cat-btn" onclick="switchSkill(this,'sk-sec')">🔐 Security</button>
+      <button class="sk-cat-btn" onclick="switchSkill(this,'sk-dev')">💻 Development</button>
+    </div>
+    <div>
+      <div class="sk-panel active" id="sk-ai">
+        <span class="sk-pill">Python</span><span class="sk-pill">scikit-learn</span>
+        <span class="sk-pill">TensorFlow</span><span class="sk-pill">Deep Learning</span>
+        <span class="sk-pill">YOLOv8</span><span class="sk-pill">Ultralytics</span>
+        <span class="sk-pill">AI Agents</span><span class="sk-pill">MCP Protocol</span>
+        <span class="sk-pill">Subagents</span>
+      </div>
+      <div class="sk-panel" id="sk-cv">
+        <span class="sk-pill">OpenCV</span><span class="sk-pill">Object Detection</span>
+        <span class="sk-pill">Object Tracking</span><span class="sk-pill">NLP</span>
+        <span class="sk-pill">TF-IDF</span><span class="sk-pill">Cosine Similarity</span>
+        <span class="sk-pill">Text Processing</span><span class="sk-pill">Chatbots</span>
+        <span class="sk-pill">Computer Vision</span>
+      </div>
+      <div class="sk-panel" id="sk-cloud">
+        <span class="sk-pill">Google Cloud</span><span class="sk-pill">Vertex AI</span>
+        <span class="sk-pill">AWS Bedrock</span><span class="sk-pill">Gen AI Academy</span>
+        <span class="sk-pill">Claude API</span><span class="sk-pill">Prompt Engineering</span>
+        <span class="sk-pill">Kaggle</span><span class="sk-pill">Jira</span>
+      </div>
+      <div class="sk-panel" id="sk-data">
+        <span class="sk-pill">Data Analytics</span><span class="sk-pill">Pandas</span>
+        <span class="sk-pill">NumPy</span><span class="sk-pill">Matplotlib</span>
+        <span class="sk-pill">Data Visualization</span><span class="sk-pill">Excel</span>
+      </div>
+      <div class="sk-panel" id="sk-sec">
+        <span class="sk-pill">Cybersecurity Fundamentals</span>
+        <span class="sk-pill">Microsoft Security Copilot</span>
+        <span class="sk-pill">Threat Analysis</span>
+        <span class="sk-pill">ISRO Remote Sensing</span>
+      </div>
+      <div class="sk-panel" id="sk-dev">
+        <span class="sk-pill">Python</span><span class="sk-pill">Tkinter</span>
+        <span class="sk-pill">React</span><span class="sk-pill">HTML/CSS</span>
+        <span class="sk-pill">Git</span><span class="sk-pill">GitHub</span>
+        <span class="sk-pill">REST APIs</span><span class="sk-pill">googletrans</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── COMMUNITY ───────── -->
+<section id="community">
+  <div class="sr">
+    <p class="sec-eyebrow">// community.json</p>
+    <h2 class="sec-h">Community</h2>
+  </div>
+  <div class="comm-grid">
+    <div class="comm-c sr"><div class="ci-icon">🌐</div><div class="ci-name">GDG Capital Region</div><div class="ci-sub">Google Developer Groups</div></div>
+    <div class="comm-c sr" style="transition-delay:.07s"><div class="ci-icon">☁️</div><div class="ci-name">GDG Cloud Montreal</div><div class="ci-sub">Google Developer Groups</div></div>
+    <div class="comm-c sr" style="transition-delay:.14s"><div class="ci-icon">🇬🇧</div><div class="ci-name">GDG London</div><div class="ci-sub">Google Developer Groups</div></div>
+    <div class="comm-c sr" style="transition-delay:.21s"><div class="ci-icon">🎓</div><div class="ci-name">GDG on Campus</div><div class="ci-sub">University at Albany</div></div>
+    <div class="comm-c sr" style="transition-delay:.28s"><div class="ci-icon">🟢</div><div class="ci-name">GFG Campus Mantri</div><div class="ci-sub">Ambassador 2026</div></div>
+    <div class="comm-c sr" style="transition-delay:.35s"><div class="ci-icon">⚡</div><div class="ci-name">NVIDIA Developer</div><div class="ci-sub">Community Member</div></div>
+    <div class="comm-c sr" style="transition-delay:.42s"><div class="ci-icon">🤖</div><div class="ci-name">ADK Master Class</div><div class="ci-sub">Google · Ticket Confirmed</div></div>
+    <div class="comm-c sr" style="transition-delay:.49s"><div class="ci-icon">📊</div><div class="ci-name">Kaggle × Google</div><div class="ci-sub">5-Day AI Agents · Enrolled</div></div>
+  </div>
+</section>
+
+<!-- ───────── CERTS ───────── -->
+<section id="certs">
+  <div class="sr">
+    <p class="sec-eyebrow">// credentials.all()</p>
+    <h2 class="sec-h">Certifications</h2>
+  </div>
+  <div class="certs-grid">
+    <div class="cert-c sr"><div class="cert-ico ia">🤖</div><div><div class="cert-name">Model Context Protocol: Advanced Topics</div><div class="cert-iss">Anthropic Academy</div><div class="cert-dt">May 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico ia">🧠</div><div><div class="cert-name">Introduction to Agent Skills</div><div class="cert-iss">Anthropic Academy</div><div class="cert-dt">May 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico ia">🤖</div><div><div class="cert-name">Introduction to Subagents</div><div class="cert-iss">Anthropic Academy</div><div class="cert-dt">May 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico ia">💡</div><div><div class="cert-name">AI Capabilities and Limitations</div><div class="cert-iss">Anthropic Academy</div><div class="cert-dt">May 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico ia">☁️</div><div><div class="cert-name">Claude with Amazon Bedrock</div><div class="cert-iss">Anthropic Academy</div><div class="cert-dt">May 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico ia">☁️</div><div><div class="cert-name">Claude with Google Cloud Vertex AI</div><div class="cert-iss">Anthropic Academy</div><div class="cert-dt">May 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico ia">🎓</div><div><div class="cert-name">AI Fluency for Students</div><div class="cert-iss">Anthropic Academy</div><div class="cert-dt">May 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico ig">🏅</div><div><div class="cert-name">Google Prompting Essentials Badge</div><div class="cert-iss">Google · Coursera</div><div class="cert-dt">May 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico ig">✍️</div><div><div class="cert-name">Start Writing Prompts like a Pro</div><div class="cert-iss">Google · Coursera</div><div class="cert-dt">May 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico ig">🎨</div><div><div class="cert-name">Design Prompts for Everyday Work Tasks</div><div class="cert-iss">Google · Coursera</div><div class="cert-dt">May 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico ig">📊</div><div><div class="cert-name">Speed Up Data Analysis & Presentation Building</div><div class="cert-iss">Google · Coursera</div><div class="cert-dt">May 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico ig">🤝</div><div><div class="cert-name">Use AI as a Creative or Expert Partner</div><div class="cert-iss">Google · Coursera</div><div class="cert-dt">May 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico il">🔐</div><div><div class="cert-name">Microsoft Security Copilot</div><div class="cert-iss">LinkedIn Learning</div><div class="cert-dt">Jun 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico il">🛡️</div><div><div class="cert-name">Cybersecurity Foundations</div><div class="cert-iss">LinkedIn Learning</div><div class="cert-dt">Jun 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico if">🏦</div><div><div class="cert-name">JPMorgan Chase Software Engineering Simulation</div><div class="cert-iss">The Forage</div><div class="cert-dt">Jun 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico if">🏪</div><div><div class="cert-name">Walmart USA Data Engineering Simulation</div><div class="cert-iss">The Forage</div><div class="cert-dt">Jun 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico if">🏢</div><div><div class="cert-name">Deloitte Australia Technology Simulation</div><div class="cert-iss">The Forage</div><div class="cert-dt">Jun 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico if">🔵</div><div><div class="cert-name">Tata Cybersecurity Analyst Simulation</div><div class="cert-iss">The Forage</div><div class="cert-dt">Jun 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico ii">🛸</div><div><div class="cert-name">Aerosols: Measurement, Retrieval & Impacts</div><div class="cert-iss">ISRO · IIRS Distance Learning</div><div class="cert-dt">Jun 2026</div></div></div>
+    <div class="cert-c sr"><div class="cert-ico in">☁️</div><div><div class="cert-name">Getting Started with AWS Generative AI</div><div class="cert-iss">Coursera · Financial Aid Approved</div><div class="cert-dt">In Progress · 2026</div></div></div>
+  </div>
+</section>
+
+<!-- ───────── CONTACT ───────── -->
+<section id="contact">
+  <p class="contact-pre sr">Ready to collaborate?</p>
+  <h2 class="contact-h sr">
+    <span class="ch1">Let's build</span>
+    <span class="ch2">together.</span>
+  </h2>
+  <p class="contact-sub sr">Open to AI/ML internships, research collaborations, hackathon teams, and projects that actually matter. I move fast and ship faster.</p>
+  <div class="contact-btns sr">
+    <a href="mailto:jaypatel29042008@gmail.com" class="cb-link cb-primary">📧 Email Me</a>
+    <a href="https://linkedin.com/in/jay-patel-01ab3b377" target="_blank" class="cb-link cb-ghost">💼 LinkedIn</a>
+    <a href="https://github.com/jaypatel29042008-glitch" target="_blank" class="cb-link cb-ghost">⚡ GitHub</a>
+  </div>
+</section>
+
+<footer>© 2026 Jay Patel &nbsp;·&nbsp; LDRP Institute of Technology & Research · GTU &nbsp;·&nbsp; Designed with intent, built with passion</footer>
+
+<script>
+/* ── CUSTOM CURSOR ── */
+const co=document.getElementById('curOuter'),ci=document.getElementById('curInner');
+let mx=0,my=0,cx=0,cy=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;ci.style.left=mx+'px';ci.style.top=my+'px'});
+(function animCur(){cx+=(mx-cx)*.12;cy+=(my-cy)*.12;co.style.left=cx+'px';co.style.top=cy+'px';requestAnimationFrame(animCur)})();
+document.querySelectorAll('a,button,.bc,.proj-card,.xp-header,.comm-c,.cert-c,.sk-cat-btn').forEach(el=>{
+  el.addEventListener('mouseenter',()=>co.classList.add('hovered'));
+  el.addEventListener('mouseleave',()=>co.classList.remove('hovered'));
+});
+
+/* ── NAV SCROLL ── */
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('scrolled',scrollY>60)
+});
+
+/* ── BENTO CARD MOUSE GLOW ── */
+document.querySelectorAll('.bc').forEach(c=>{
+  c.addEventListener('mousemove',e=>{
+    const r=c.getBoundingClientRect();
+    const x=((e.clientX-r.left)/r.width*100).toFixed(1);
+    const y=((e.clientY-r.top)/r.height*100).toFixed(1);
+    c.style.setProperty('--mx',x+'%');
+    c.style.setProperty('--my',y+'%');
+  });
+});
+
+/* ── 3D TILT ON PROJECT CARDS ── */
+document.querySelectorAll('.proj-card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5;
+    const y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`perspective(800px) rotateY(${x*10}deg) rotateX(${-y*8}deg) translateY(-5px)`;
+  });
+  card.addEventListener('mouseleave',()=>{
+    card.style.transform='perspective(800px) rotateY(0) rotateX(0) translateY(0)';
+  });
+});
+
+/* ── SCROLL REVEAL ── */
+const ro=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('v')})
+},{threshold:.1});
+document.querySelectorAll('.sr,.sr-l,.sr-r').forEach(el=>ro.observe(el));
+
+/* ── COUNTER ANIMATION ── */
+const cr=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting)return;
+    const el=e.target,target=+el.dataset.target,suffix=el.dataset.suffix||'';
+    let cur=0;const step=Math.max(1,Math.ceil(target/40));
+    const t=setInterval(()=>{cur=Math.min(cur+step,target);el.textContent=cur+suffix;if(cur>=target)clearInterval(t)},40);
+    cr.unobserve(el);
+  })
+},{threshold:.5});
+document.querySelectorAll('[data-target]').forEach(el=>cr.observe(el));
+
+/* ── XP ACCORDION ── */
+function toggleXP(header){
+  const item=header.parentElement;
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.xp-item.open').forEach(i=>i.classList.remove('open'));
+  if(!isOpen)item.classList.add('open');
+}
+
+/* ── SKILL TABS ── */
+function switchSkill(btn,panelId){
+  document.querySelectorAll('.sk-cat-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.sk-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+/* ── TEXT SCRAMBLE ON HERO ── */
+const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%';
+function scramble(el,final){
+  let iter=0;const orig=final;
+  const iv=setInterval(()=>{
+    el.textContent=orig.split('').map((_,i)=>
+      i<iter?orig[i]:chars[Math.floor(Math.random()*chars.length)]
+    ).join('');
+    if(iter>=orig.length)clearInterval(iv);
+    iter+=.4;
+  },30);
+}
+setTimeout(()=>{
+  const n1=document.querySelector('.hn1'),n2=document.querySelector('.hn2');
+  scramble(n1,'JAY');scramble(n2,'PATEL');
+},500);
+
+/* ── HERO PARALLAX ── */
+window.addEventListener('scroll',()=>{
+  const h=document.getElementById('heroName');
+  if(h)h.style.transform=`translateY(${scrollY*.15}px)`;
+});
+</script>
+</body>
+</html>
